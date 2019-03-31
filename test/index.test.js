@@ -8,7 +8,6 @@ const moxios = require('moxios')
 const { client } = require('../')
 
 const expect = chai.expect
-
 const URL = 'http://url'
 const DATA = { param1: 'value1' }
 
