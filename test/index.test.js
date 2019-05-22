@@ -1,5 +1,3 @@
-'use strict'
-/* global describe it beforeEach afterEach */
 /* eslint promise/no-callback-in-promise: 0 */
 
 const chai = require('chai')
