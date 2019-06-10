@@ -1,9 +1,23 @@
 const axios = require('axios')
-const { getCorrelationId } = require('@first-lego-league/ms-correlation')
 
-exports.client = axios.create({
-  transformRequest: [(data, headers) => {
-    headers['correlation-id'] = getCorrelationId()
-    return JSON.stringify(data)
-  }]
-})
+const { correlatedClient } = require('./lib/correlation')
+const { independentClient } = require('./lib/independence')
+
+const DEFAULT_OPTIONS = {
+  correlated: true,
+  independent: false
+}
+
+exports.generateClient = (options = DEFAULT_OPTIONS) => {
+  let axiosInstance = axios.create(options.axiosOptions)
+
+  if (options.correlated) {
+    axiosInstance = correlatedClient(axiosInstance)
+  }
+
+  if (options.independent) {
+    axiosInstance = independentClient(axiosInstance)
+  }
+
+  return axiosInstance
+}

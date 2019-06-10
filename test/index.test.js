@@ -3,7 +3,7 @@
 const chai = require('chai')
 const moxios = require('moxios')
 
-const { client } = require('../')
+const { generateClient } = require('../')
 
 const expect = chai.expect
 
@@ -11,7 +11,11 @@ const URL = 'http://url'
 const DATA = { param1: 'value1' }
 
 describe('ms-client', () => {
-  beforeEach(() => moxios.install(client))
+  let client
+  beforeEach(() => {
+    client = generateClient()
+    moxios.install(client)
+  })
   afterEach(() => moxios.uninstall())
 
   describe('get request', () => {
