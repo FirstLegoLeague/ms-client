@@ -1,23 +1,20 @@
 const axios = require('axios')
 
-const { correlatedClient } = require('./lib/correlation')
-const { independentClient } = require('./lib/independence')
+require('./lib/correlation')
+require('./lib/independence')
 
 const DEFAULT_OPTIONS = {
-  correlated: true,
   independent: false
 }
 
-exports.generateClient = (options = DEFAULT_OPTIONS) => {
-  let axiosInstance = axios.create(options.axiosOptions)
+exports.client = (options = DEFAULT_OPTIONS) => {
+  const client = axios.create(options.axiosOptions)
 
-  if (options.correlated) {
-    axiosInstance = correlatedClient(axiosInstance)
-  }
+  client.correlate()
 
   if (options.independent) {
-    axiosInstance = independentClient(axiosInstance)
+    client.independent()
   }
 
-  return axiosInstance
+  return client
 }
