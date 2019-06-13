@@ -66,9 +66,11 @@ describe('independent request', () => {
     const data = { }
     const request = new IndependentRequest(data, key)
 
-    return request.send(mockAdapter).catch(() => {
-      expect(mockStorage.get(key)).to.equal(data)
-    })
+    return request.send(mockAdapter)
+      .then(() => { expect(false).to.equal(true) })
+      .catch(() => {
+        expect(mockStorage.get(key)).to.equal(data)
+      })
   })
 
   it('saves the request if it fails with status 0', () => {
@@ -79,9 +81,11 @@ describe('independent request', () => {
     const data = { }
     const request = new IndependentRequest(data, key)
 
-    return request.send(mockAdapter).catch(() => {
-      expect(mockStorage.get(key)).to.equal(data)
-    })
+    return request.send(mockAdapter)
+      .then(() => { expect(false).to.equal(true) })
+      .catch(() => {
+        expect(mockStorage.get(key)).to.equal(data)
+      })
   })
 
   it('saves the request if it is successful with status 0', () => {
@@ -90,9 +94,11 @@ describe('independent request', () => {
     const data = { }
     const request = new IndependentRequest(data, key)
 
-    return request.send(mockAdapter).catch(() => {
-      expect(mockStorage.get(key)).to.equal(data)
-    })
+    return request.send(mockAdapter)
+      .then(() => { expect(false).to.equal(true) })
+      .catch(() => {
+        expect(mockStorage.get(key)).to.equal(data)
+      })
   })
 
   it('does not save the request if it fails with status 400', () => {
@@ -103,9 +109,11 @@ describe('independent request', () => {
     const data = { }
     const request = new IndependentRequest(data, key)
 
-    return request.send(mockAdapter).catch(() => {
-      expect(mockStorage.get(key)).to.equal(undefined)
-    })
+    return request.send(mockAdapter)
+      .then(() => { expect(false).to.equal(true) })
+      .catch(() => {
+        expect(mockStorage.get(key)).to.equal(undefined)
+      })
   })
 
   it('does not save the request if it is successful', () => {
