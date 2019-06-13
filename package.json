@@ -39,7 +39,8 @@
     "mocha": "^6.0.2",
     "mock-local-storage": "^1.1.8",
     "nyc": "^13.3.0",
-    "proxyquire": "^2.1.0"
+    "proxyquire": "^2.1.0",
+    "sinon": "^7.3.2"
   },
   "peerDependencies": {
     "@first-lego-league/ms-correlation": "^0.0.5",

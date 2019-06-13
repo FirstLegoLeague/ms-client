@@ -1,6 +1,6 @@
 const chai = require('chai')
 
-const { LocalStorageNamespace } = require('../../lib/local_storage_namespace')
+const { LocalStorageNamespace } = require('../../../lib/independence/local_storage_namespace')
 
 const expect = chai.expect
 const STORAGE_PREFIX = 'prefix'
