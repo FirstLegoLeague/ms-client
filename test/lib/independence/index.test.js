@@ -1,8 +1,11 @@
 const chai = require('chai')
 const sinon = require('sinon')
+const spies = require('chai-spies')
 const axios = require('axios')
 const proxyquire = require('proxyquire')
 const Promise = require('bluebird')
+
+chai.use(spies)
 
 const requestMock = {
   send: () => Promise.resolve(mockResponse)
@@ -12,12 +15,13 @@ const mockResponse = {
   status: 200
 }
 let mockAdapter
+let pendingRequests
 const IndependentRequest = chai.spy(data => {
   requestMock.data = data
   return requestMock
 })
 
-proxyquire('../../../lib/independence', {
+const { makeIndependent } = proxyquire('../../../lib/independence', {
   './independent_request': {
     IndependentRequest
   }
@@ -25,14 +29,40 @@ proxyquire('../../../lib/independence', {
 
 const expect = chai.expect
 
+function retryedPendingRequests () {
+  expect(IndependentRequest.all).to.have.been.called()
+  pendingRequests.forEach(request => {
+    expect(request.send).to.have.been.called()
+  })
+}
+
+function didNotRetryPendingRequests () {
+  expect(IndependentRequest.all).to.not.have.been.called()
+  pendingRequests.forEach(request => {
+    expect(request.send).to.not.have.been.called()
+  })
+}
+
 describe('independence', () => {
   let client
   let clock
 
   beforeEach(() => {
     mockAdapter = () => Promise.resolve(mockResponse)
-    IndependentRequest.all = chai.spy(() => [])
-    client = axios.create({ adapter: mockAdapter }).independent()
+    pendingRequests = [{
+      send: chai.spy(() => Promise.resolve(mockResponse))
+    }, {
+      send: chai.spy(() => Promise.resolve(mockResponse))
+    }, {
+      send: chai.spy(() => Promise.resolve(mockResponse))
+    }, {
+      send: chai.spy(() => Promise.resolve(mockResponse))
+    }, {
+      send: chai.spy(() => Promise.resolve(mockResponse))
+    }]
+    IndependentRequest.all = chai.spy(() => pendingRequests)
+    client = axios.create({ adapter: mockAdapter })
+    makeIndependent(client)
     clock = sinon.useFakeTimers()
   })
 
@@ -51,7 +81,7 @@ describe('independence', () => {
   it('retries all pending requests on success', () => {
     return client.get()
       .then(() => {
-        expect(IndependentRequest.all).to.have.been.called()
+        retryedPendingRequests()
       })
   })
 
@@ -62,7 +92,7 @@ describe('independence', () => {
     return client.get()
       .then(() => { expect(false).to.equal(true) })
       .catch(() => {
-        expect(IndependentRequest.all).to.not.have.been.called()
+        didNotRetryPendingRequests()
       })
   })
 
@@ -70,6 +100,6 @@ describe('independence', () => {
     expect(client.interval).to.not.equal(undefined)
     expect(client.interval._repeat).to.equal(5000)
     client.interval._onTimeout()
-    expect(IndependentRequest.all).to.have.been.called()
+    retryedPendingRequests()
   })
 })

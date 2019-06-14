@@ -1,19 +1,19 @@
 const axios = require('axios')
 
-require('./lib/correlation')
-require('./lib/independence')
+const { correlate } = require('./lib/correlation')
+const { makeIndependent } = require('./lib/independence')
 
 const DEFAULT_OPTIONS = {
   independent: false
 }
 
-exports.client = (options = DEFAULT_OPTIONS) => {
+exports.Client = (options = DEFAULT_OPTIONS) => {
   const client = axios.create(options.axiosOptions)
 
-  client.correlate()
+  correlate(client)
 
   if (options.independent) {
-    client.independent()
+    makeIndependent(client, axios.defaults.adapater)
   }
 
   return client
