@@ -21,22 +21,34 @@ const IndependentRequest = chai.spy(data => {
   return requestMock
 })
 
+const mockStorage = {
+  put: (key, value) => { mockStorage._data[key] = value },
+  get: key => mockStorage._data[key],
+  delete: key => { delete mockStorage._data[key] },
+  all: () => mockStorage._data,
+  _data: {}
+}
+const getMockStorage = chai.spy(() => mockStorage)
+
 const { makeIndependent } = proxyquire('../../../lib/independence', {
   './independent_request': {
     IndependentRequest
+  },
+  './local_storage_namespace': {
+    LocalStorageNamespace: getMockStorage
   }
 })
 
 const expect = chai.expect
 
-function retryedPendingRequests () {
+function expectPendingRequestsToBeRetried () {
   expect(IndependentRequest.all).to.have.been.called()
   pendingRequests.forEach(request => {
     expect(request.send).to.have.been.called()
   })
 }
 
-function didNotRetryPendingRequests () {
+function expectPendingRequestsToNotBeRetried () {
   expect(IndependentRequest.all).to.not.have.been.called()
   pendingRequests.forEach(request => {
     expect(request.send).to.not.have.been.called()
@@ -46,27 +58,27 @@ function didNotRetryPendingRequests () {
 describe('independence', () => {
   let client
   let clock
+  const sandbox = chai.spy.sandbox()
 
   beforeEach(() => {
     mockAdapter = () => Promise.resolve(mockResponse)
-    pendingRequests = [{
-      send: chai.spy(() => Promise.resolve(mockResponse))
-    }, {
-      send: chai.spy(() => Promise.resolve(mockResponse))
-    }, {
-      send: chai.spy(() => Promise.resolve(mockResponse))
-    }, {
-      send: chai.spy(() => Promise.resolve(mockResponse))
-    }, {
-      send: chai.spy(() => Promise.resolve(mockResponse))
-    }]
+    pendingRequests = [
+      { send: chai.spy(() => Promise.resolve(mockResponse)) },
+      { send: chai.spy(() => Promise.resolve(mockResponse)) },
+      { send: chai.spy(() => Promise.resolve(mockResponse)) },
+      { send: chai.spy(() => Promise.resolve(mockResponse)) },
+      { send: chai.spy(() => Promise.resolve(mockResponse)) }
+    ]
     IndependentRequest.all = chai.spy(() => pendingRequests)
     client = axios.create({ adapter: mockAdapter })
     makeIndependent(client)
     clock = sinon.useFakeTimers()
+    mockStorage._data = { }
+    sandbox.on(mockStorage, ['put', 'get', 'all'])
   })
 
   afterEach(() => {
+    sandbox.restore()
     clock.restore()
     clearInterval(client.interval)
   })
@@ -81,25 +93,25 @@ describe('independence', () => {
   it('retries all pending requests on success', () => {
     return client.get()
       .then(() => {
-        retryedPendingRequests()
+        expectPendingRequestsToBeRetried()
       })
   })
 
   it('does not retry all pending requests on failure', () => {
     const error = new Error('some error')
     error.status = 500
-    requestMock.send = () => Promise.resolve().then(() => { throw error })
+    requestMock.send = () => Promise.reject(error)
     return client.get()
-      .then(() => { expect(false).to.equal(true) })
+      .then(() => { expect.fail() })
       .catch(() => {
-        didNotRetryPendingRequests()
+        expectPendingRequestsToNotBeRetried()
       })
   })
 
   it('sets an interval to retry pending requests every 5 seconds', () => {
-    expect(client.interval).to.not.equal(undefined)
+    expect(client.interval).to.exist
     expect(client.interval._repeat).to.equal(5000)
     client.interval._onTimeout()
-    retryedPendingRequests()
+    expectPendingRequestsToBeRetried()
   })
 })

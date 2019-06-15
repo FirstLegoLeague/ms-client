@@ -1,11 +1,10 @@
 const chai = require('chai')
 const sinon = require('sinon')
 const spies = require('chai-spies')
-const proxyquire = require('proxyquire')
 const Promise = require('bluebird')
 
 chai.use(spies)
-
+const MOCK_DATE = 1558625994627
 const mockStorage = {
   put: (key, value) => { mockStorage._data[key] = value },
   get: key => mockStorage._data[key],
@@ -13,45 +12,35 @@ const mockStorage = {
   all: () => mockStorage._data,
   _data: {}
 }
-const getmockStorage = chai.spy(() => mockStorage)
-const MOCK_DATE = 1558625994627
 
-const { IndependentRequest } = proxyquire('../../../lib/independence/independent_request', {
-  './local_storage_namespace': {
-    LocalStorageNamespace: getmockStorage
-  }
-})
+const { IndependentRequest } = require('../../../lib/independence/independent_request')
 
 const expect = chai.expect
 
 describe('independent request', () => {
   let clock
-  const sandbox = chai.spy.sandbox()
 
   beforeEach(() => {
-    mockStorage._data = { }
-    sandbox.on(mockStorage, ['put', 'get', 'all'])
     clock = sinon.useFakeTimers(MOCK_DATE)
+    mockStorage._data = { }
   })
 
   afterEach(() => {
-    sandbox.restore()
     clock.restore()
   })
 
-  it('created a storage with the key `independentRequests`', () => {
-    expect(getmockStorage).to.have.been.called.with('independentRequests')
-    expect(IndependentRequest.storage).to.equal(mockStorage)
+  it('throws an error if not given a storage', () => {
+    expect(() => new IndependentRequest()).to.throw()
   })
 
   it('defaultly sets the key to be the current date', () => {
-    expect(new IndependentRequest().key).to.equal(MOCK_DATE)
+    expect(new IndependentRequest({ storage: mockStorage }).key).to.equal(MOCK_DATE)
   })
 
   it('calls the adapter with the given data', () => {
     const mockAdapter = chai.spy(() => Promise.resolve({ status: 200 }))
     const data = { }
-    const request = new IndependentRequest(data)
+    const request = new IndependentRequest({ data, storage: mockStorage })
 
     return request.send(mockAdapter).then(() => {
       expect(mockAdapter).to.have.been.called.with(data)
@@ -61,30 +50,30 @@ describe('independent request', () => {
   it('saves the request if it fails with status 500', () => {
     const error = new Error('some error')
     error.status = 500
-    const mockAdapter = () => Promise.resolve().then(() => { throw error })
+    const mockAdapter = () => Promise.reject(error)
     const key = 'key'
     const data = { }
-    const request = new IndependentRequest(data, key)
+    const request = new IndependentRequest({ data, key, storage: mockStorage })
 
     return request.send(mockAdapter)
-      .then(() => { expect(false).to.equal(true) })
-      .catch(() => {
-        expect(mockStorage.get(key)).to.equal(data)
+      .catch(() => { })
+      .then(() => {
+        expect(request.storage.get(key)).to.equal(data)
       })
   })
 
   it('saves the request if it fails with status 0', () => {
     const error = new Error('some error')
     error.status = 0
-    const mockAdapter = () => Promise.resolve().then(() => { throw error })
+    const mockAdapter = () => Promise.reject(error)
     const key = 'key'
     const data = { }
-    const request = new IndependentRequest(data, key)
+    const request = new IndependentRequest({ data, key, storage: mockStorage })
 
     return request.send(mockAdapter)
-      .then(() => { expect(false).to.equal(true) })
-      .catch(() => {
-        expect(mockStorage.get(key)).to.equal(data)
+      .catch(() => { })
+      .then(() => {
+        expect(request.storage.get(key)).to.equal(data)
       })
   })
 
@@ -92,27 +81,27 @@ describe('independent request', () => {
     const mockAdapter = () => Promise.resolve({ status: 0 })
     const key = 'key'
     const data = { }
-    const request = new IndependentRequest(data, key)
+    const request = new IndependentRequest({ data, key, storage: mockStorage })
 
     return request.send(mockAdapter)
-      .then(() => { expect(false).to.equal(true) })
-      .catch(() => {
-        expect(mockStorage.get(key)).to.equal(data)
+      .catch(() => { })
+      .then(() => {
+        expect(request.storage.get(key)).to.equal(data)
       })
   })
 
   it('does not save the request if it fails with status 400', () => {
     const error = new Error('some error')
     error.status = 400
-    const mockAdapter = () => Promise.resolve().then(() => { throw error })
+    const mockAdapter = () => Promise.reject(error)
     const key = 'key'
     const data = { }
-    const request = new IndependentRequest(data, key)
+    const request = new IndependentRequest({ data, key, storage: mockStorage })
 
     return request.send(mockAdapter)
-      .then(() => { expect(false).to.equal(true) })
-      .catch(() => {
-        expect(mockStorage.get(key)).to.equal(undefined)
+      .catch(() => { })
+      .then(() => {
+        expect(request.storage.get(key)).to.be.undefined
       })
   })
 
@@ -120,10 +109,10 @@ describe('independent request', () => {
     const mockAdapter = () => Promise.resolve({ status: 200 })
     const key = 'key'
     const data = { }
-    const request = new IndependentRequest(data, key)
+    const request = new IndependentRequest({ data, key, storage: mockStorage })
 
     return request.send(mockAdapter).then(() => {
-      expect(mockStorage.get(key)).to.equal(undefined)
+      expect(request.storage.get(key)).to.be.undefined
     })
   })
 
@@ -134,13 +123,17 @@ describe('independent request', () => {
       key3: { field1: 'value3', field2: 'another value1' },
       key4: { field1: true, field2: false }
     }
-    const all = IndependentRequest.all()
+    const all = IndependentRequest.all(mockStorage)
 
-    expect(all.length).to.eql(Object.keys(mockStorage._data).length)
+    expect(all.length).to.deep.equal(Object.keys(mockStorage._data).length)
     all.forEach((request, index) => {
-      expect(request instanceof IndependentRequest).to.equal(true)
-      expect(request.data).to.equal(Object.values(mockStorage._data)[index])
-      expect(request.key).to.equal(Object.keys(mockStorage._data)[index])
+      expect(request instanceof IndependentRequest).to.be.true
+      expect(request.data).to.equal(Object.values(request.storage._data)[index])
+      expect(request.key).to.equal(Object.keys(request.storage._data)[index])
     })
+  })
+
+  it('all throws an error if not given a storage', () => {
+    expect(() => IndependentRequest.all()).to.throw()
   })
 })

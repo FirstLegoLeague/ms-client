@@ -13,3 +13,4 @@ rules:
   chai-expect/no-inner-compare: warn
   chai-expect/missing-assertion: warn
   chai-expect/terminating-properties: warn
+  promise/no-native: off

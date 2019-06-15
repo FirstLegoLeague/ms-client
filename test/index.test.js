@@ -7,7 +7,10 @@ chai.use(spies)
 let correlationSpy
 let independenceSpy
 
-const { Client } = proxyquire('../', {
+global.window = global.window || { }
+window.localStorage = global.localStorage
+
+const { createClient } = proxyquire('../', {
   './lib/correlation': {
     correlate: function () {
       correlationSpy.apply(this, arguments)
@@ -29,17 +32,17 @@ describe('ms-client', () => {
   })
 
   it('client is defaultly correlated', () => {
-    Client()
+    createClient()
     expect(correlationSpy).to.have.been.called()
   })
 
   it('client is not defaulty independent', () => {
-    Client()
+    createClient()
     expect(independenceSpy).to.not.have.been.called()
   })
 
   it('client is independent if requested to be', () => {
-    Client({ independent: true })
+    createClient({ independent: true })
     expect(independenceSpy).to.have.been.called()
   })
 })
