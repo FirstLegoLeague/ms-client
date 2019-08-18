@@ -1,134 +1,48 @@
-/* eslint promise/no-callback-in-promise: 0 */
-
 const chai = require('chai')
-const moxios = require('moxios')
+const spies = require('chai-spies')
+const proxyquire = require('proxyquire')
 
-const { client } = require('../')
+chai.use(spies)
+
+let correlationSpy
+let independenceSpy
+
+global.window = global.window || { }
+window.localStorage = global.localStorage
+
+const { createClient } = proxyquire('../', {
+  './lib/correlation': {
+    correlate: function () {
+      correlationSpy.apply(this, arguments)
+    }
+  },
+  './lib/independence': {
+    makeIndependent: function () {
+      independenceSpy.apply(this, arguments)
+    }
+  }
+})
 
 const expect = chai.expect
 
-const URL = 'http://url'
-const DATA = { param1: 'value1' }
-
 describe('ms-client', () => {
-  beforeEach(() => moxios.install(client))
-  afterEach(() => moxios.uninstall())
-
-  describe('get request', () => {
-    beforeEach(() => {
-      client.get(URL)
-    })
-
-    it('calls axios get', done => {
-      moxios.wait(() => {
-        const request = moxios.requests.mostRecent()
-        return request.respondWith({ status: 200 })
-          .then(() => {
-            expect(request.config.method).to.equals('get')
-            expect(request.config.url).to.equals(URL)
-            done()
-          })
-      })
-    })
-
-    it('adds a correlation-id to the request', done => {
-      moxios.wait(() => {
-        const request = moxios.requests.mostRecent()
-        return request.respondWith({ status: 200 })
-          .then(() => {
-            expect(Object.keys(request.config.headers)).to.include('correlation-id')
-            done()
-          })
-      })
-    })
+  beforeEach(() => {
+    correlationSpy = chai.spy(() => {})
+    independenceSpy = chai.spy(() => {})
   })
 
-  describe('post request', () => {
-    beforeEach(() => {
-      client.post(URL, DATA)
-    })
-
-    it('calls axios post', done => {
-      moxios.wait(() => {
-        const request = moxios.requests.mostRecent()
-        return request.respondWith({ status: 200 })
-          .then(() => {
-            expect(request.config.method).to.equals('post')
-            expect(request.config.url).to.equals(URL)
-            expect(request.config.data).to.equals(JSON.stringify(DATA))
-            done()
-          })
-      })
-    })
-
-    it('adds a correlation-id to the request', done => {
-      moxios.wait(() => {
-        const request = moxios.requests.mostRecent()
-        return request.respondWith({ status: 200 })
-          .then(() => {
-            expect(Object.keys(request.config.headers)).to.include('correlation-id')
-            done()
-          })
-      })
-    })
+  it('client is defaultly correlated', () => {
+    createClient()
+    expect(correlationSpy).to.have.been.called()
   })
 
-  describe('put request', () => {
-    beforeEach(() => {
-      client.put(URL, DATA)
-    })
-
-    it('calls axios put', done => {
-      moxios.wait(() => {
-        const request = moxios.requests.mostRecent()
-        return request.respondWith({ status: 200 })
-          .then(() => {
-            expect(request.config.method).to.equals('put')
-            expect(request.config.url).to.equals(URL)
-            expect(request.config.data).to.equals(JSON.stringify(DATA))
-            done()
-          })
-      })
-    })
-
-    it('adds a correlation-id to the request', done => {
-      moxios.wait(() => {
-        const request = moxios.requests.mostRecent()
-        return request.respondWith({ status: 200 })
-          .then(() => {
-            expect(Object.keys(request.config.headers)).to.include('correlation-id')
-            done()
-          })
-      })
-    })
+  it('client is not defaulty independent', () => {
+    createClient()
+    expect(independenceSpy).to.not.have.been.called()
   })
 
-  describe('delete request', () => {
-    beforeEach(() => {
-      client.delete(URL, DATA)
-    })
-
-    it('calls axios delete', done => {
-      moxios.wait(() => {
-        const request = moxios.requests.mostRecent()
-        return request.respondWith({ status: 200 })
-          .then(() => {
-            expect(request.config.method).to.equals('delete')
-            expect(request.config.url).to.equals(URL)
-            done()
-          })
-      })
-    })
-
-    it('adds a correlation-id to the request', done => {
-      moxios.wait(() => {
-        const request = moxios.requests.mostRecent()
-        return request.respondWith({ status: 200 })
-          .then(() => {
-            expect(Object.keys(request.config.headers)).to.include('correlation-id')
-            done()
-          })
-      })
-    })
+  it('client is independent if requested to be', () => {
+    createClient({ independent: true })
+    expect(independenceSpy).to.have.been.called()
   })
 })

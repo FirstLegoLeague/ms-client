@@ -1,30 +1,35 @@
 {
   "name": "@first-lego-league/ms-client",
-  "version": "1.0.3",
   "description": "A HTTP client working by the Module Standard",
+  "version": "1.0.3",
   "main": "index.js",
-  "repository": "git@github.com:FirstLegoLeague/ms-client.git",
+  "repository": "https://github.com/FirstLegoLeague/ms-client.git",
   "author": "Idan Stark <idanstark42@gmail.com>",
-  "license": "MIT",
+  "license": "GPL-3.0",
+  "files": [
+    "index.js",
+    "lib/**/*.js"
+  ],
   "engines": {
-    "node": ">=8.2.1"
+    "node": ">=8.0.0"
   },
   "scripts": {
-    "test": "cross-env nyc --all --reporter=text --check-coverage --lines 90 mocha --recursive",
+    "test": "cross-env SECRET=mock_secret PORT=0000 mocha --recursive --require mock-local-storage",
+    "test:coverage": "nyc -n=lib/**/*.js --reporter=text yarn test",
+    "test:ci": "nyc -n=lib/**/*.js --reporter=lcov yarn test && codecov",
     "lint": "eslint --ext .js ./",
     "lint:fix": "eslint --ext .js --fix ./"
   },
-  "dependencies": {
-    "axios": "^0.18.0",
-    "bluebird": "^3.5.3"
-  },
   "devDependencies": {
-    "@first-lego-league/eslint-config": "^1.0.0",
     "@first-lego-league/ms-correlation": "^0.0.5",
+    "axios": "^0.19.0",
+    "bluebird": "^3.5.5",
     "chai": "^4.2.0",
     "chai-spies": "^1.0.0",
+    "codecov": "^3.5.0",
     "cross-env": "^5.2.0",
     "eslint": "^5.16.0",
+    "eslint-config-first-lego-league": "^1.0.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-chai-expect": "^2.0.1",
     "eslint-plugin-chai-friendly": "^0.4.1",
@@ -33,11 +38,13 @@
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-standard": "^4.0.0",
     "mocha": "^6.0.2",
-    "moxios": "^0.4.0",
+    "mock-local-storage": "^1.1.8",
     "nyc": "^13.3.0",
-    "proxyquire": "^2.1.0"
+    "proxyquire": "^2.1.0",
+    "sinon": "^7.3.2"
   },
   "peerDependencies": {
-    "@first-lego-league/ms-correlation": "^0.0.5"
+    "@first-lego-league/ms-correlation": "^0.0.5",
+    "axios": "^0.19.0"
   }
 }
