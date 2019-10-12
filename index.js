@@ -7,7 +7,8 @@ const DEFAULT_OPTIONS = {
   independent: false
 }
 
-exports.createClient = (options = DEFAULT_OPTIONS) => {
+exports.createClient = (options = { }) => {
+  Object.assign(options, DEFAULT_OPTIONS)
   const client = axios.create(options.axiosOptions)
 
   correlate(client)
