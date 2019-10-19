@@ -9,7 +9,7 @@ const DEFAULT_OPTIONS = {
 }
 
 exports.createClient = (options = { }) => {
-  Object.assign(options, DEFAULT_OPTIONS)
+  options = Object.assign({ }, DEFAULT_OPTIONS, options)
   const client = axios.create(options.axiosOptions)
 
   if (isServer) {
