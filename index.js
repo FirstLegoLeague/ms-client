@@ -16,7 +16,11 @@ exports.createClient = (options = { }) => {
 
   if (isServer) {
     const { correlate } = require('./lib/correlation')
+    const { logRequests, logResponses } = require('./lib/request-logging')
+
     correlate(client)
+    logRequests(client)
+    logResponses(client)
   }
 
   if (options.independent) {
