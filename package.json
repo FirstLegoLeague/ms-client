@@ -15,8 +15,8 @@
   },
   "scripts": {
     "test": "cross-env SECRET=mock_secret PORT=0000 mocha --recursive --require mock-local-storage",
-    "test:coverage": "nyc -n=lib/**/*.js --reporter=text yarn test",
-    "test:ci": "nyc -n=lib/**/*.js --reporter=lcov yarn test && codecov",
+    "test:coverage": "nyc --reporter=text yarn test",
+    "test:ci": "nyc --reporter=lcov yarn test && codecov",
     "lint": "eslint --ext .js ./",
     "lint:fix": "eslint --ext .js --fix ./"
   },
