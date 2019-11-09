@@ -1,31 +1,13 @@
-const axios = require('axios')
-const isServer = require('detect-node')
-
-const { identifyClient } = require('./lib/client-identity')
-const { makeIndependent } = require('./lib/independence')
-
-const DEFAULT_OPTIONS = {
-  independent: false
-}
+const { createClient } = require('./lib/client_factory')
+const { correlate } = require('./lib/correlation')
+const { logRequests, logResponses } = require('./lib/logging')
 
 exports.createClient = (options = { }) => {
-  options = Object.assign({ }, DEFAULT_OPTIONS, options)
-  const client = axios.create(options.axiosOptions)
+  const client = createClient(options)
 
-  identifyClient(client, options.clientId)
-
-  if (isServer) {
-    const { correlate } = require('./lib/correlation')
-    const { logRequests, logResponses } = require('./lib/logging')
-
-    correlate(client)
-    logRequests(client, options.logging)
-    logResponses(client, options.logging)
-  }
-
-  if (options.independent) {
-    makeIndependent(client, axios.defaults.adapater, options.independenceOptions)
-  }
+  correlate(client)
+  logRequests(client, options.logging)
+  logResponses(client, options.logging)
 
   return client
 }
