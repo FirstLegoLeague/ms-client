@@ -15,7 +15,7 @@ const randomClientId = 'ramdon-id'
 let mockAdapter
 let randomize
 
-const { identifyClient } = proxyquire('../../lib/client-identity', {
+const { identifyClient } = proxyquire('../../lib/client_identity', {
   randomatic: function () {
     return randomize.apply(this, arguments)
   }
