@@ -3,11 +3,13 @@
   "description": "A HTTP client working by the Module Standard",
   "version": "1.1.1",
   "main": "index.js",
+  "browser": "browser.js",
   "repository": "https://github.com/FirstLegoLeague/ms-client.git",
   "author": "Idan Stark <idanstark42@gmail.com>",
   "license": "GPL-3.0",
   "files": [
     "index.js",
+    "browser.js",
     "lib/**/*.js"
   ],
   "engines": {
@@ -15,13 +17,12 @@
   },
   "scripts": {
     "test": "cross-env SECRET=mock_secret PORT=0000 mocha --recursive --require mock-local-storage",
-    "test:coverage": "nyc -n=lib/**/*.js --reporter=text yarn test",
-    "test:ci": "nyc -n=lib/**/*.js --reporter=lcov yarn test && codecov",
+    "test:coverage": "nyc --reporter=text yarn test",
+    "test:ci": "nyc --reporter=lcov yarn test && codecov",
     "lint": "eslint --ext .js ./",
     "lint:fix": "eslint --ext .js --fix ./"
   },
   "devDependencies": {
-    "@first-lego-league/ms-correlation": "^0.0.5",
     "axios": "^0.19.0",
     "bluebird": "^3.5.5",
     "chai": "^4.2.0",
@@ -44,7 +45,13 @@
     "sinon": "^7.3.2"
   },
   "peerDependencies": {
-    "@first-lego-league/ms-correlation": "^0.0.5",
     "axios": "^0.19.0"
+  },
+  "dependencies": {
+    "randomatic": "^3.1.1"
+  },
+  "optionalDependencies": {
+    "@first-lego-league/ms-correlation": "^1.0.2",
+    "@first-lego-league/ms-logger": "^2.0.1"
   }
 }

@@ -42,14 +42,14 @@ const { makeIndependent } = proxyquire('../../../lib/independence', {
 const expect = chai.expect
 
 function expectPendingRequestsToBeRetried () {
-  expect(IndependentRequest.all).to.have.been.called()
+  expect(IndependentRequest.all).to.have.been.called(2)
   pendingRequests.forEach(request => {
     expect(request.send).to.have.been.called()
   })
 }
 
 function expectPendingRequestsToNotBeRetried () {
-  expect(IndependentRequest.all).to.not.have.been.called()
+  expect(IndependentRequest.all).to.have.been.called(1)
   pendingRequests.forEach(request => {
     expect(request.send).to.not.have.been.called()
   })
@@ -63,11 +63,11 @@ describe('independence', () => {
   beforeEach(() => {
     mockAdapter = () => Promise.resolve(mockResponse)
     pendingRequests = [
-      { send: chai.spy(() => Promise.resolve(mockResponse)) },
-      { send: chai.spy(() => Promise.resolve(mockResponse)) },
-      { send: chai.spy(() => Promise.resolve(mockResponse)) },
-      { send: chai.spy(() => Promise.resolve(mockResponse)) },
-      { send: chai.spy(() => Promise.resolve(mockResponse)) }
+      { send: chai.spy(() => Promise.resolve(mockResponse)), delete: chai.spy(() => { }), data: { method: 'get' } },
+      { send: chai.spy(() => Promise.resolve(mockResponse)), delete: chai.spy(() => { }), data: { method: 'post' } },
+      { send: chai.spy(() => Promise.resolve(mockResponse)), delete: chai.spy(() => { }), data: { method: 'get' } },
+      { send: chai.spy(() => Promise.resolve(mockResponse)), delete: chai.spy(() => { }), data: { method: 'delete' } },
+      { send: chai.spy(() => Promise.resolve(mockResponse)), delete: chai.spy(() => { }), data: { method: 'post' } }
     ]
     IndependentRequest.all = chai.spy(() => pendingRequests)
     client = axios.create({ adapter: mockAdapter })
@@ -81,6 +81,17 @@ describe('independence', () => {
     sandbox.restore()
     clock.restore()
     clearInterval(client.interval)
+  })
+
+  it('clears all old GET requests', () => {
+    pendingRequests
+      .filter(request => request.data.method === 'get')
+      .forEach(request => expect(request.delete).to.have.been.called())
+  })
+
+  it('does not clear any of the old requests whic are not in GET method', () => {
+    pendingRequests.filter(request => request.data.method !== 'get')
+      .forEach(request => expect(request.delete).not.to.have.been.called())
   })
 
   it('requests using an independent request', () => {
