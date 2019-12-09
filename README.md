@@ -34,7 +34,9 @@ client.get('http://some-url')
 
 ### Options
 The client can recieve options in order to upgrade it.
+
 |option|explanation|possible values|default value|
+|---|---|---|---|
 |logging| The logging options object. It has two fields, `requestLogLevel` and `responseLogLevel`|Each of the two fields can be any log level (`debug`, `info`, `warn`, `error`, `fatal`)|`{ requestLogLevel: 'info', responseLogLevel: 'debug' }`|
 |independent|Weather or not to use the independce feature|boolean|`false`|
 |axiosOptions|Options object to pass to axios constructor|See [axios documentation](https://www.npmjs.com/package/axios)|`undefined`|
