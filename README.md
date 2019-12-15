@@ -12,7 +12,7 @@ A HTTP client wraping axios working by the _FIRST_ LEGO League TMS [Module Stand
 This module was meant to serve as an extendable client which already works by the Module Standard and allows you to easily make requests.
 It gives you all the functionality needed for a HTTP client running in node or in browser.
 
-### In Node
+### In node
 The client givven in node is fully [correlated](https://github.com/FirstLegoLeague/architecture/blob/master/module-standard/v1.0-SNAPSHOT.md#cross-module-correlations) and logged using [ms-logger](https://www.npmjs.com/package/@first-lego-league/ms-logger). It also has a client-id which recognizes it against other clients, and is sent in the headers for recognition.
 
 ### In browser
@@ -35,14 +35,13 @@ client.get('http://some-url')
 ### Options
 The client can recieve options in order to upgrade it.
 
-|option|explanation|possible values|default value|
-|---|---|---|---|
-|logging| The logging options object. It has two fields, `requestLogLevel` and `responseLogLevel`|Each of the two fields can be any log level (`debug`, `info`, `warn`, `error`, `fatal`)|`{ requestLogLevel: 'info', responseLogLevel: 'debug' }`|
-|independent|Weather or not to use the independce feature|boolean|`false`|
-|axiosOptions|Options object to pass to axios constructor|See [axios documentation](https://www.npmjs.com/package/axios)|`undefined`|
-|clientId|An ID for the client which you can specify if you want to control it|any string|Random key|
-|promise|A promise class to use|Any Promise class|A global promise class. The program will fail if there is no global promise class.|
-
+| **option** | **meaning** | **options** | **default** |
+|--|--|--|--|
+| logging | The logging options object. It has two fields, `requestLogLevel` and `responseLogLevel` | Each of the two fields can be any log level (`debug`, `info`, `warn`, `error`, `fatal`) | `{ requestLogLevel: 'info', responseLogLevel: 'debug' }` |
+| independent | Weather or not to use the independce feature | Boolean | `false` |
+| axiosOptions | Options object to pass to axios constructor | See [axios documentation](https://www.npmjs.com/package/axios) | `undefined` |
+| clientId | An ID for the client which you can specify if you want to control it | String | Random base64 string |
+| promise | A promise class to use | Any Promise class | A global promise class. The program will fail if there is no global promise class. |
 
 ## Contribution
 To contribute to this repository, simply create a PR and set one of the Code Owners to be a reviewer.
