@@ -1,19 +1,21 @@
 [![npm](https://img.shields.io/npm/v/@first-lego-league/ms-client.svg)](https://www.npmjs.com/package/@first-lego-league/ms-client)
+[![codecov](https://codecov.io/gh/FirstLegoLeague/ms-client/branch/master/graph/badge.svg)](https://codecov.io/gh/FirstLegoLeague/ms-client)
+[![Build status](https://ci.appveyor.com/api/projects/status/65scfycp2uyg83ri/branch/master?svg=true)](https://ci.appveyor.com/project/2roy999/ms-client/branch/master)
+[![GitHub](https://img.shields.io/github/license/FirstLegoLeague/ms-client.svg)](https://github.com/FirstLegoLeague/ms-client/blob/master/LICENSE)
+
 [![David Dependency Status](https://david-dm.org/FirstLegoLeague/ms-client.svg)](https://david-dm.org/FirstLegoLeague/ms-client)
 [![David Dev Dependency Status](https://david-dm.org/FirstLegoLeague/ms-client/dev-status.svg)](https://david-dm.org/FirstLegoLeague/ms-client#info=devDependencies)
 [![David Peer Dependencies Status](https://david-dm.org/FirstLegoLeague/ms-client/peer-status.svg)](https://david-dm.org/FirstLegoLeague/ms-client?type=peer)
-[![Build status](https://ci.appveyor.com/api/projects/status/hppjrcyredan0xpd/branch/master?svg=true)](https://ci.appveyor.com/project/2roy999/ms-client/branch/master)
-[![GitHub](https://img.shields.io/github/license/FirstLegoLeague/ms-client.svg)](https://github.com/FirstLegoLeague/ms-client/blob/master/LICENSE)
 
 # FIRST LEGO Legaue client
-A HTTP client wraping axios working by the _FIRST_ LEGO League TMS [Module Standard](https://github.com/FirstLegoLeagueIL/architecture/blob/master/module-standard/v1.0-SNAPSHOT.md#log-messages).
+A HTTP client wraping axios working by the _FIRST_ LEGO League TMS [Module Standard](https://github.com/FirstLegoLeague/architecture/blob/master/module-standard/v1.0-SNAPSHOT.md#log-messages).
 
 ## The logic of this module
 This module was meant to serve as an extendable client which already works by the Module Standard and allows you to easily make requests.
 It gives you all the functionality needed for a HTTP client running in node or in browser.
 
 ### In node
-The client givven in node is fully [correlated](https://github.com/FirstLegoLeague/architecture/blob/master/module-standard/v1.0-SNAPSHOT.md#cross-module-correlations) and logged using [ms-logger](https://www.npmjs.com/package/@first-lego-league/ms-logger). It also has a client-id which recognizes it against other clients, and is sent in the headers for recognition.
+The client givven in node is fully [correlated](https://github.com/FirstLegoLeague/architecture/blob/master/module-standard/v1.0-SNAPSHOT.md#cross-module-correlations) and logged using [ms-client](https://www.npmjs.com/package/@first-lego-league/ms-client). It also has a client-id which recognizes it against other clients, and is sent in the headers for recognition.
 
 ### In browser
 In broswer many of these feature are not required or needed. So the client only has a client-id, and isn't correlated or logged.
