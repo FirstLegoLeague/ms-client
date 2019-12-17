@@ -1,7 +1,7 @@
 {
   "name": "@first-lego-league/ms-client",
   "description": "A HTTP client working by the Module Standard",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "index.js",
   "browser": "browser.js",
   "repository": "https://github.com/FirstLegoLeague/ms-client.git",
@@ -51,7 +51,7 @@
     "randomatic": "^3.1.1"
   },
   "optionalDependencies": {
-    "@first-lego-league/ms-correlation": "^1.0.2",
-    "@first-lego-league/ms-logger": "^2.0.1"
+    "@first-lego-league/ms-correlation": "^1.0.3",
+    "@first-lego-league/ms-logger": "^2.0.2"
   }
 }
