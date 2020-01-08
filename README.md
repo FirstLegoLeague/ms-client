@@ -7,11 +7,11 @@
 [![David Dev Dependency Status](https://david-dm.org/FirstLegoLeague/ms-client/dev-status.svg)](https://david-dm.org/FirstLegoLeague/ms-client#info=devDependencies)
 [![David Peer Dependencies Status](https://david-dm.org/FirstLegoLeague/ms-client/peer-status.svg)](https://david-dm.org/FirstLegoLeague/ms-client?type=peer)
 
-# FIRST LEGO Legaue client
-A HTTP client wraping axios working by the _FIRST_ LEGO League TMS [Module Standard](https://github.com/FirstLegoLeague/architecture/blob/master/module-standard/v1.0-SNAPSHOT.md#log-messages).
+# FIRST LEGO Legaue HTTP client
+A HTTP client package, wraping [axios](https://www.npmjs.com/package/axios), working according to the _FIRST_ LEGO League TMS [Module Standard HTTP requests section](https://github.com/FirstLegoLeague/architecture/blob/master/module-standard/v1.0-SNAPSHOT.md#http-requests).
 
-## The logic of this module
-This module was meant to serve as an extendable client which already works by the Module Standard and allows you to easily make requests.
+## Logic
+This package was meant to serve as an extendable client which already works by the Module Standard and allows you to easily make requests.
 It gives you all the functionality needed for a HTTP client running in node or in browser.
 
 ### In node
