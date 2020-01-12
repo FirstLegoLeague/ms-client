@@ -47,21 +47,6 @@ describe('independent request', () => {
     })
   })
 
-  it('saves the request if it fails with status 500', () => {
-    const error = new Error('some error')
-    error.status = 500
-    const mockAdapter = () => Promise.reject(error)
-    const key = 'key'
-    const data = { }
-    const request = new IndependentRequest({ data, key, storage: mockStorage })
-
-    return request.send(mockAdapter)
-      .catch(() => { })
-      .then(() => {
-        expect(request.storage.get(key)).to.equal(data)
-      })
-  })
-
   it('saves the request if it fails with status 0', () => {
     const error = new Error('some error')
     error.status = 0
@@ -93,6 +78,21 @@ describe('independent request', () => {
   it('does not save the request if it fails with status 400', () => {
     const error = new Error('some error')
     error.status = 400
+    const mockAdapter = () => Promise.reject(error)
+    const key = 'key'
+    const data = { }
+    const request = new IndependentRequest({ data, key, storage: mockStorage })
+
+    return request.send(mockAdapter)
+      .catch(() => { })
+      .then(() => {
+        expect(request.storage.get(key)).to.be.undefined
+      })
+  })
+
+  it('does not save the request if it fails with status 500', () => {
+    const error = new Error('some error')
+    error.status = 500
     const mockAdapter = () => Promise.reject(error)
     const key = 'key'
     const data = { }
