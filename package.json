@@ -13,7 +13,7 @@
     "lib/**/*.js"
   ],
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=8.x"
   },
   "scripts": {
     "test": "cross-env SECRET=mock_secret PORT=0000 mocha --recursive --require mock-local-storage",
