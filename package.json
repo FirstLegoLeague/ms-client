@@ -1,7 +1,7 @@
 {
   "name": "@first-lego-league/ms-client",
   "description": "A HTTP client working by the Module Standard",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "main": "index.js",
   "browser": "browser.js",
   "repository": "https://github.com/FirstLegoLeague/ms-client.git",
