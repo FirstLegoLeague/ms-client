@@ -71,7 +71,7 @@ describe('independence', () => {
     ]
     IndependentRequest.all = chai.spy(() => pendingRequests)
     client = axios.create({ adapter: mockAdapter })
-    makeIndependent(client)
+    makeIndependent(client, mockAdapter, Promise)
     clock = sinon.useFakeTimers()
     mockStorage._data = { }
     sandbox.on(mockStorage, ['put', 'get', 'all'])
